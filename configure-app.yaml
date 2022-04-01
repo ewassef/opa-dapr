@@ -1,0 +1,75 @@
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: opa-test
+  #This is in the default namespace and is whts applied to BONES... a more specific name is recommended
+spec:
+  httpPipeline:
+    handlers:
+    - name: opa-policy
+      type: middleware.http.opa
+  metric:
+    enabled: true
+  mtls:
+    enabled: true
+    workloadCertTTL: 24h
+    allowedClockSkew: 15m
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: opa-policy  
+spec:
+  type: middleware.http.opa
+  version: v1
+  metadata:
+
+    # `defaultStatus` is the status code to return for denied responses
+    - name: defaultStatus
+      value: 403
+
+    # `rego` is the open policy agent policy to evaluate. required
+    # The policy package must be http and the policy must set data.http.allow
+    - name: rego
+      value: |
+        package http
+
+        #we should get denied more than not because of this
+        default allow = false
+
+        allow = {
+          "allow": false,
+          "additional_headers": {
+                "rejected-by": "opa-policy"
+            }
+        }
+
+         
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample
+  labels:
+    app: sample
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample
+  template:
+    metadata:
+      labels:
+        app: sample
+      annotations:
+        dapr.io/app-id: "backend"
+        dapr.io/enabled: "true"
+        dapr.io/config: "opa-test"
+        dapr.io/app-port: "80"
+        dapr.io/sidecar-listen-addresses: "0.0.0.0"
+    spec:
+      containers:
+      - name: sample
+        image: mendhak/http-https-echo
+        ports:
+        - containerPort: 80
