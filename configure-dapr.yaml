@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dashboard
-  namespace: dapr-system 
+  namespace: dapr-system
 spec:
   ingressClassName: nginx
   rules:
@@ -31,14 +31,13 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: backend.dev-k8s.cloud
-    http:
-      paths:
-      - backend:
-          service:
-            name: nginx-ingress-dapr
-            port:
-              number: 80
-        path: /
-        pathType: ImplementationSpecific
----
+    - host: backend.dev-k8s.cloud
+      http:
+        paths:
+          - backend:
+              service:
+                name: nginx-ingress-dapr
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
