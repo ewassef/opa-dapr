@@ -21,8 +21,7 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 helm upgrade --install nginx ingress-nginx/ingress-nginx -f nginx-values.yaml -n ingress-nginx --create-namespace --version 4.0.6
 
-
-
+kubectl apply -f ./config-crd.yaml
 kubectl apply -f ./configure-dapr.yaml
 kubectl apply -f ./configure-app.yaml
 
