@@ -4,7 +4,7 @@ metadata:
   name: opa-test
   #This is in the default namespace and is whts applied to BONES... a more specific name is recommended
 spec:
-  httpPipeline:
+  appHttpPipeline:
     handlers:
     - name: opa-policy
       type: middleware.http.opa
@@ -18,7 +18,7 @@ spec:
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-  name: opa-policy  
+  name: opa-policy
 spec:
   type: middleware.http.opa
   version: v1
